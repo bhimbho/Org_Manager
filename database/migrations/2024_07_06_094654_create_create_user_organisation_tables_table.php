@@ -11,11 +11,9 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('organisations', function (Blueprint $table) {
-            $table->uuid('orgId')->primary();
-            $table->string('name');
-            $table->string('description')->nullable();
-            $table->foreignUuid('owner_id')->constrained('users', 'userId');
+        Schema::create('organisation_user', function (Blueprint $table) {
+            $table->foreignUuid('userId')->index()->constrained('users', 'userId');
+            $table->foreignUuid('orgId')->index()->constrained('organisations', 'orgId');
             $table->timestamps();
         });
     }
@@ -25,6 +23,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('organisations');
+        Schema::dropIfExists('create_user_organisation_tables');
     }
 };
