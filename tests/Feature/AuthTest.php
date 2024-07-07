@@ -15,7 +15,7 @@ use Laravel\Passport\PersonalAccessClient;
 use Tests\TestCase;
 use function Psy\debug;
 
-class ExampleTest extends TestCase
+class AuthTest extends TestCase
 {
     use RefreshDatabase;
 
@@ -138,7 +138,7 @@ class ExampleTest extends TestCase
         $response2->assertJsonValidationErrorFor('email');
     }
 
-    public function test_accurate_default_org_name_is_generatd()
+    public function test_accurate_default_org_name_is_generated()
     {
         $response = $this->postJson('/api/register', [
             'email' => 'x@mail.com',
@@ -160,5 +160,32 @@ class ExampleTest extends TestCase
             ],
         ]);
         $response->assertSee('accessToken');
+    }
+
+    public function test_response_contains_expected_user_details()
+    {
+        $response = $this->postJson('/api/register', [
+            'email' => 'x@mail.com',
+            'firstName' => 'Kemo',
+            'lastName' => 'Tepo',
+            'password' => '123456xxAS',
+        ]);
+
+        $response->assertSuccessful();
+        $response->assertJson([
+            'data' => [
+                'user' => [
+                    'email' => 'x@mail.com',
+                    'firstName' => 'Kemo',
+                    'lastName' => 'Tepo',
+                    'organisations' => [
+                        0 => [
+                            'name' => 'Kemo\'s Organisation',
+                            'description' => null
+                        ],
+                    ],
+                ],
+            ],
+        ]);
     }
 }
