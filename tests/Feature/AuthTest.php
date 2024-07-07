@@ -74,7 +74,7 @@ class AuthTest extends TestCase
 
     public function test_fails_when_email_is_missing()
     {
-        $response = $this->postJson('/api/register', [
+        $response = $this->postJson('/auth/register', [
             'firstName' => 'Test',
             'lastName' => 'HNG',
         ]);
@@ -86,7 +86,7 @@ class AuthTest extends TestCase
 
     public function test_fails_when_firstname_is_missing()
     {
-        $response = $this->postJson('/api/register', [
+        $response = $this->postJson('/auth/register', [
             'email' => 'x@mail.com',
             'lastName' => 'HNG',
 
@@ -98,7 +98,7 @@ class AuthTest extends TestCase
 
     public function test_fails_when_lastname_is_missing()
     {
-        $response = $this->postJson('/api/register', [
+        $response = $this->postJson('/auth/register', [
             'email' => 'x@mail.com',
             'firstName' => 'Kemo',
 
@@ -110,7 +110,7 @@ class AuthTest extends TestCase
 
     public function test_fails_when_password_is_missing()
     {
-        $response = $this->postJson('/api/register', [
+        $response = $this->postJson('/auth/register', [
             'email' => 'x@mail.com',
             'firstName' => 'Kemo',
             'lastName' => 'Kara',
@@ -122,14 +122,14 @@ class AuthTest extends TestCase
 
     public function test_fail_on_duplicate_emails()
     {
-        $response = $this->postJson('/api/register', [
+        $response = $this->postJson('/auth/register', [
             'email' => 'x@mail.com',
             'firstName' => 'Kemo',
             'lastName' => 'Kara',
             'password' => 'password',
         ]);
         $response->assertSuccessful();
-        $response2 = $this->postJson('/api/register', [
+        $response2 = $this->postJson('/auth/register', [
             'email' => 'x@mail.com',
             'firstName' => 'Kemo',
             'lastName' => 'Kara',
@@ -140,7 +140,7 @@ class AuthTest extends TestCase
 
     public function test_accurate_default_org_name_is_generated()
     {
-        $response = $this->postJson('/api/register', [
+        $response = $this->postJson('/auth/register', [
             'email' => 'x@mail.com',
             'firstName' => 'Kemo',
             'lastName' => 'Tepo',
@@ -164,7 +164,7 @@ class AuthTest extends TestCase
 
     public function test_response_contains_expected_user_details()
     {
-        $response = $this->postJson('/api/register', [
+        $response = $this->postJson('/auth/register', [
             'email' => 'x@mail.com',
             'firstName' => 'Kemo',
             'lastName' => 'Tepo',
@@ -187,5 +187,22 @@ class AuthTest extends TestCase
                 ],
             ],
         ]);
+    }
+
+    public function test_user_can_login()
+    {
+        $user = User::factory()->create();
+        $response = $this->postJson('/auth/login', [
+            'email' => $user->email,
+            'password' => 'password'
+        ]);
+
+        $response->assertSuccessful();
+
+        $response = $this->postJson('/auth/login', [
+            'email' => $user->email,
+            'password' => 'password1'
+        ]);
+        $response->assertJson(['message' => 'Authentication failed']);
     }
 }
