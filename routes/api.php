@@ -4,8 +4,6 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\UserOrganisationController;
 use Illuminate\Support\Facades\Route;
 
-Route::post('/register', [UserController::class, 'register']);
-Route::post('/login', [UserController::class, 'login']);
 
 Route::middleware(['auth:api'])->group(function () {
     Route::get('/users/{user}', [UserController::class, 'get_users']);
