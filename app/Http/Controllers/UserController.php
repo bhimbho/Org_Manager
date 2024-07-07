@@ -62,7 +62,7 @@ class UserController extends Controller
                 'message' => 'Registration successful',
                 'data' => [
                     'accessToken' => $accessToken,
-                    'user' => $user->load('organisations')
+                    'user' => $user
                 ]
             ], Response::HTTP_CREATED);
         } catch (\Exception $exception) {

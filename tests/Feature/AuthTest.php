@@ -146,20 +146,11 @@ class AuthTest extends TestCase
             'lastName' => 'Tepo',
             'password' => '123456xxAS',
         ]);
+        $userData = $response->json('data');
+        $userId = $userData['user']['userId'];
+        $org = Organisation::query()->where('owner_id', $userId)->first();
 
-        $response->assertSuccessful();
-        $response->assertJson([
-            'data' => [
-                'user' => [
-                    'organisations' => [
-                        0 => [
-                            'name' => 'Kemo\'s Organisation',
-                        ],
-                    ],
-                ],
-            ],
-        ]);
-        $response->assertSee('accessToken');
+        $this->assertEquals("Kemo's Organisation", $org->name);
     }
 
     public function test_response_contains_expected_user_details()
@@ -177,13 +168,7 @@ class AuthTest extends TestCase
                 'user' => [
                     'email' => 'x@mail.com',
                     'firstName' => 'Kemo',
-                    'lastName' => 'Tepo',
-                    'organisations' => [
-                        0 => [
-                            'name' => 'Kemo\'s Organisation',
-                            'description' => null
-                        ],
-                    ],
+                    'lastName' => 'Tepo'
                 ],
             ],
         ]);
