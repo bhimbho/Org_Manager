@@ -1,5 +1,6 @@
 <?php
 
+use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -29,5 +30,10 @@ return Application::configure(basePath: dirname(__DIR__))
                 'message' => 'Client error',
                 'statusCode' => Response::HTTP_BAD_REQUEST
             ], Response::HTTP_BAD_REQUEST);
+        });
+        $exceptions->renderable(function (\Illuminate\Validation\ValidationException $validationException) {
+            return response()->json([
+                'errors' => $validationException->errors(),
+            ], $validationException->status);
         });
     })->create();
