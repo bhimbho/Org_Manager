@@ -13,7 +13,7 @@ class Organisation extends Model
     use HasFactory, HasUuids;
 
     protected $primaryKey = 'orgId';
-    protected $fillable = ['name', 'description', 'owner_id', 'member_id'];
+    protected $fillable = ['name', 'description', 'owner_id'];
 
     public function users(): BelongsToMany
     {

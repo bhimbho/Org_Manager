@@ -4,16 +4,15 @@ namespace App\Http\Controllers;
 
 use App\Models\Organisation;
 use App\Models\User;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 
 class UserOrganisationController extends Controller
 {
-    public function get_organisations(User $user)
+    public function get_organisations()
     {
-        $organisations = $user->load(['organisations' => function ($query) {
-            $query->with('owner');
-        }])->organisations;
+        $organisations = auth()->user()->organisations()->with('owner')->get();
 
         return response()->json([
             'status' => 'success',
@@ -24,6 +23,17 @@ class UserOrganisationController extends Controller
         ]);
     }
 
+    public function get_organisation(Organisation $organisation): JsonResponse
+    {
+        $organisation = auth()->user()->organisations()->wherePivot('orgId', $organisation->orgId)->firstOrFail();
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Get single organisation',
+            'data' => [
+                $organisation,
+            ]
+        ]);
+    }
     public function add(Request $request, User $user)
     {
         $request->validate(
@@ -33,7 +43,7 @@ class UserOrganisationController extends Controller
             ]
         );
         $org = Organisation::create([
-            'name' => $request->name . '\'s Organisation',
+            'name' => ucfirst($request->name) . '\'s Organisation',
             'description' => $request->description ?? null,
             'owner_id' => $request->user()->userId
         ]);

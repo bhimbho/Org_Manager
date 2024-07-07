@@ -19,14 +19,14 @@ class UserController extends Controller
             'email' => 'required|string|email|max:255',
             'password' => 'required|string'
         ]);
-        if (!Auth::attempt(['email' => $request['email'], 'password' => $request['password']])) {
+        if (!auth('web')->attempt(['email' => $request['email'], 'password' => $request['password']])) {
             return response()->json([
                 'status' => 'Bad request',
                 'message' => 'Authentication failed',
                 'statusCode' => Response::HTTP_UNAUTHORIZED
             ], Response::HTTP_UNAUTHORIZED);
         }
-        $user = Auth::user();
+        $user = auth('web')->user();
         return response()->json([
             'status' => 'success',
             'message' => 'Login successful',
@@ -41,7 +41,7 @@ class UserController extends Controller
     {
         $request = $request->validate([
            'email' => 'required|string|email|max:255|unique:users,email',
-           'password' => 'required|string|confirmed|min:8',
+           'password' => 'required|string|min:8',
            'firstName' => 'required|string|max:255',
            'lastName' => 'required|string|max:255',
            'phone' => 'sometimes|string|max:255',
@@ -52,7 +52,7 @@ class UserController extends Controller
             $user = User::create($request);
             $org = Organisation::create([
                 'owner_id' => $user->userId,
-                'name' => $user->firstName . "'s Organisation"
+                'name' => ucfirst($user->firstName) . '\'s Organisation'
             ]);
             $user->organisations()->attach($org);
             $accessToken = $user->createToken('authToken')->accessToken;
@@ -62,7 +62,7 @@ class UserController extends Controller
                 'message' => 'Registration successful',
                 'data' => [
                     'accessToken' => $accessToken,
-                    'user' => $user
+                    'user' => $user->load('organisations')
                 ]
             ], Response::HTTP_CREATED);
         } catch (\Exception $exception) {

@@ -9,7 +9,8 @@ Route::post('/login', [UserController::class, 'login']);
 
 Route::middleware(['auth:api'])->group(function () {
     Route::get('/users/{user}', [UserController::class, 'get_users']);
-    Route::get('/organisations/{user?}', [UserOrganisationController::class, 'get_organisations']);
+    Route::get('/organisations', [UserOrganisationController::class, 'get_organisations']);
+    Route::get('/organisations/{organisation}', [UserOrganisationController::class, 'get_organisation']);
     Route::post('/organisations/{organisation}/users', [UserOrganisationController::class, 'add_member']);
     Route::post('/organisations/{user}', [UserOrganisationController::class, 'add']);
 });
