@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\UserResource;
 use App\Models\Organisation;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
@@ -32,7 +33,7 @@ class UserController extends Controller
             'message' => 'Login successful',
             'data' => [
                 'accessToken' => $user->createToken('authToken')->accessToken,
-                'user' => $user,
+                'user' => new UserResource($user),
             ]
         ]);
     }
@@ -62,7 +63,7 @@ class UserController extends Controller
                 'message' => 'Registration successful',
                 'data' => [
                     'accessToken' => $accessToken,
-                    'user' => $user
+                    'user' => new UserResource($user),
                 ]
             ], Response::HTTP_CREATED);
         } catch (\Exception $exception) {
@@ -79,9 +80,9 @@ class UserController extends Controller
     {
         return response()->json([
             'status' => 'success',
-            'message' => 'Get users',
+            'message' => '<message>',
             'data' => [
-                $user
+                new UserResource($user),
             ]
         ]);
     }

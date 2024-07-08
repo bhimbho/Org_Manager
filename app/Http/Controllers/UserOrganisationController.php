@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\OrganisationCollection;
+use App\Http\Resources\OrganisationResource;
 use App\Models\Organisation;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
@@ -16,9 +18,9 @@ class UserOrganisationController extends Controller
 
         return response()->json([
             'status' => 'success',
-            'message' => 'Get all organisations',
+            'message' => '<message>',
             'data' => [
-                'organisations' => $organisations,
+                'organisations' => OrganisationResource::collection($organisations),
             ]
         ]);
     }
@@ -28,13 +30,13 @@ class UserOrganisationController extends Controller
         $organisation = auth()->user()->organisations()->wherePivot('orgId', $organisation->orgId)->firstOrFail();
         return response()->json([
             'status' => 'success',
-            'message' => 'Get single organisation',
+            'message' => '<message>',
             'data' => [
-                $organisation,
+                new OrganisationResource($organisation),
             ]
         ]);
     }
-    public function add(Request $request, User $user)
+    public function add(Request $request)
     {
         $request->validate(
             [
@@ -47,11 +49,11 @@ class UserOrganisationController extends Controller
             'description' => $request->description ?? null,
             'owner_id' => $request->user()->userId
         ]);
-        $user->organisations()->attach($org);
+        $request->user()->organisations()->attach($org);
         return response()->json([
             'status' => 'success',
             'message' => 'Organisation created',
-            'data' => $org->load('owner')
+            'data' => new OrganisationResource($org->load('owner'))
         ], Response::HTTP_CREATED);
     }
 
