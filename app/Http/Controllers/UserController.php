@@ -41,10 +41,10 @@ class UserController extends Controller
     {
         $request = $request->validate([
            'email' => 'required|string|email|max:255|unique:users,email',
-           'password' => 'required|string|min:8',
+           'password' => 'required|string',
            'firstName' => 'required|string|max:255',
            'lastName' => 'required|string|max:255',
-           'phone' => 'sometimes|string|max:255',
+           'phone' => 'nullable|string|max:255',
         ]);
 
         try {
